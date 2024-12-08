@@ -119,8 +119,10 @@ INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUE
 INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (9, 'Grace Taylor', 9000, 5);
 INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (10, 'Hank Anderson', 7500, 5);
 
-SELECT partition_name, table_name FROM all_tab_partitions
+SELECT partition_name
+FROM user_tab_partitions
 WHERE table_name = 'SALES_HASH';
+
 
 1.Retrieve sales details from 2nd partition.
 
