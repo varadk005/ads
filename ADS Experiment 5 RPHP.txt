@@ -1,0 +1,144 @@
+Experiment5
+
+CREATE TABLE employees (
+    id INT NOT NULL,
+    fname VARCHAR2(25) NOT NULL,
+    lname VARCHAR2(25) NOT NULL,
+    store_id INT NOT NULL,
+    department_id INT NOT NULL,
+    PRIMARY KEY (id)
+)
+PARTITION BY RANGE (id) (
+    PARTITION p0 VALUES LESS THAN (5),
+    PARTITION p1 VALUES LESS THAN (10),
+    PARTITION p2 VALUES LESS THAN (15),
+    PARTITION p3 VALUES LESS THAN (20),
+    PARTITION p4 VALUES LESS THAN (MAXVALUE)
+);
+
+
+INSERT INTO employees (id, fname, lname, store_id, department_id)
+VALUES (1, 'John', 'Doe', 101, 1);
+
+INSERT INTO employees (id, fname, lname, store_id, department_id)
+VALUES (6, 'Jane', 'Smith', 102, 1);
+
+INSERT INTO employees (id, fname, lname, store_id, department_id)
+VALUES (12, 'Alice', 'Johnson', 103, 2);
+
+INSERT INTO employees (id, fname, lname, store_id, department_id)
+VALUES (18, 'Bob', 'Brown', 104, 2);
+
+INSERT INTO employees (id, fname, lname, store_id, department_id)
+VALUES (20, 'Charlie', 'Davis', 105, 3);
+
+
+
+
+
+
+
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (2, 'Jane', 'Smith', 1, 101);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (3, 'Sam', 'Brown', 2, 102);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (4, 'Sue', 'Davis', 2, 102);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (5, 'Tom', 'White', 1, 103);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (6, 'Sara', 'Miller', 1, 103);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (7, 'Tim', 'Wilson', 2, 104);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (8, 'Sophie', 'Taylor', 2, 104);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (9, 'Steve', 'Moore', 3, 105);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (10, 'Jake', 'Thomas', 3, 105);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (11, 'Jess', 'Johnson', 3, 106);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (12, 'Jill', 'Clark', 3, 106);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (13, 'Jim', 'Martinez', 1, 107);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (14, 'Joan', 'Hernandez', 1, 107);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (15, 'Jack', 'Lopez', 2, 108);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (16, 'Jason', 'Gonzalez', 2, 108);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (17, 'Julia', 'Perez', 3, 109);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (18, 'Javier', 'Martinez', 3, 109);
+INSERT INTO employees (id, fname, lname, store_id, department_id) VALUES (19, 'Joseph', 'Ramirez', 1, 110);
+
+SELECT * FROM employees PARTITION (p0);
+SELECT * FROM employees PARTITION (p1);
+SELECT * FROM employees PARTITION (p2);
+SELECT * FROM employees PARTITION (p3);
+SELECT * FROM employees PARTITION (p4);
+
+1.Retrieve employee details from partition P1 and P2.
+    
+SELECT * FROM employees PARTITION (P1)
+UNION ALL
+SELECT * FROM employees PARTITION (P2);
+
+
+2.Retrieve employee details from partition P0 and P1 where fname begin with ‘S’.
+    
+SELECT * FROM employees PARTITION (P0)
+WHERE fname LIKE 'S%'
+UNION ALL
+SELECT * FROM employees PARTITION (P1)
+WHERE fname LIKE 'S%';
+
+3.Count number of employees from each department from p1, p2 and p3
+
+SELECT 'P1' AS partition_name, department_id, COUNT(*) AS employee_count
+FROM employees PARTITION (P1)
+GROUP BY department_id
+
+UNION ALL
+
+SELECT 'P2' AS partition_name, department_id, COUNT(*) AS employee_count
+FROM employees PARTITION (P2)
+GROUP BY department_id
+
+UNION ALL
+
+SELECT 'P3' AS partition_name, department_id, COUNT(*) AS employee_count
+FROM employees PARTITION (P3)
+GROUP BY department_id;
+
+
+Hash Partition:
+
+CREATE TABLE sales_hash (
+    salesman_id NUMBER(5) PRIMARY KEY,
+    salesman_name VARCHAR2(30),
+    sales_amount NUMBER(10),
+    week_no NUMBER(2)
+)
+PARTITION BY HASH (salesman_id)
+PARTITIONS 4; 
+
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (1, 'John Doe', 5000, 1);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (2, 'Jane Smith', 7000, 1);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (3, 'Alice Johnson', 3000, 2);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (4, 'Bob Brown', 4000, 2);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (5, 'Charlie Davis', 8000, 3);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (6, 'Diana Miller', 6000, 3);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (7, 'Eve Wilson', 4500, 4);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (8, 'Frank Moore', 3500, 4);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (9, 'Grace Taylor', 9000, 5);
+INSERT INTO sales_hash (salesman_id, salesman_name, sales_amount, week_no) VALUES (10, 'Hank Anderson', 7500, 5);
+
+SELECT partition_name, table_name FROM all_tab_partitions
+WHERE table_name = 'SALES_HASH';
+
+1.Retrieve sales details from 2nd partition.
+
+SELECT * FROM sales_hash PARTITION (SYS_P649329);
+SELECT * FROM sales_hash PARTITION (SYS_P649328);
+SELECT * FROM sales_hash PARTITION (SYS_P649330);
+SELECT * FROM sales_hash PARTITION (SYS_P649331);
+
+2.Retrieve name of sales mans and amount from 4	partition where sale amount
+between 2000 and 5000.
+
+SELECT salesman_name, sales_amount
+FROM sales_hash PARTITION (SYS_P649331)
+WHERE sales_amount BETWEEN 2000 AND 5000;
+
+
+3.Find average sale amount per week from 3rd partition.
+SELECT week_no, AVG(sales_amount) AS average_sales
+FROM sales_hash PARTITION (SYS_P649331)
+GROUP BY week_no;
+

@@ -1,0 +1,280 @@
+ADS Assignment 1 BOOK  
+
+
+Q1)CREATE TYPE Name1 AS OBJECT(  
+ fname varchar(20),  
+ lname varchar(20)  
+)final  
+
+CREATE TYPE phone_array AS VARRAY(4) OF varchar(15); 
+
+CREATE TABLE Author (  
+ author_id VARCHAR2(20) PRIMARY KEY,  
+ name1 Name1,  
+ phone_no phone_array); 
+
+INSERT into Author VALUES('A1', Name1('Roman,'Reings'), phone_array('0123456789')); INSERT into Author VALUES('A2', Name1('Trick','Brown'), phone_array('0123456789')); INSERT into Author VALUES('A3', Name1('Henry','Doe'), phone_array('9876543210')); 
+
+SELECT * FROM Author; 
+
+CREATE TYPE Publisher1 AS OBJECT(  
+ pub_id varchar(20),  
+ pub_name varchar(20),  
+ branch varchar(20)  
+)final 
+
+CREATE TYPE author_id_array AS VARRAY(30) OF VARCHAR(20); 
+
+create type keyword_set is varray(10) of varchar(10); 
+
+CREATE TABLE Book(  
+ ISBN INTEGER PRIMARY KEY,  
+ title varchar(30),  
+ author_id author_id_array,  
+ category varchar(10),  
+ publisher Publisher1,  
+ keyword keyword_set,  
+ 
+price NUMBER(10,2)); 
+
+INSERT INTO Book VALUES (123456, 'The Great Book', author_id_array('A123', 'A456'), 'Fiction',  Publisher1('P1','abc','LONDON'), keyword_set('Adventure', 'Fantasy', 'Epic'), 30.00 ); 
+
+INSERT INTO Book VALUES (423156, 'The Great', author_id_array('A12', 'A45'), 'Fiction',  Publisher1('P1','abc','LONDON'), keyword_set('Adventure', 'Fantasy', 'Epic'), 25.00 ); 
+
+INSERT INTO Book VALUES (745689, 'The ', author_id_array('A1', 'A4'), 'Fiction',  Publisher1('P1','abc','LONDON'), keyword_set('Adventure', 'Horror', 'Epic'), 40.00 ); 
+
+SELECT * FROM Book; 
+CREATE TABLE Customer(  
+ customer_id varchar(10) PRIMARY KEY,  
+ name1 Name1,  
+ phone keyword_set  
+); 
+
+INSERT INTO Customer VALUES('C1',Name1('Varad','Khedkar'),keyword_set('2456123')); INSERT INTO Customer VALUES('C2',Name1('Varad','K'),keyword_set('5426157')); INSERT INTO Customer VALUES('C3',Name1('Sid ,'Joshi),keyword_set('3456125')); INSERT INTO Customer VALUES('C4',Name1('Mihir ','Patil'),keyword_set('3456125'));
+
+SELECT * FROM Customer; 
+
+CREATE TABLE Book_Sale(  
+sale_id varchar(10) PRIMARY KEY,  
+customer_id varchar(10),  
+ISBN INTEGER,  
+FOREIGN KEY (customer_id) REFERENCES Customer (customer_id),   FOREIGN KEY (ISBN) REFERENCES Book (ISBN)  ); 
+
+INSERT INTO Book_Sale VALUES('S1','C1', 123456); 
+INSERT INTO Book_SaleVALUES('S2','C2', 423156); 
+INSERT INTO Book_SaleVALUES('S3','C3', 745689); 
+
+SELECT * FROM Book_Sale; 
+
+
+1. SELECT  
+ b.ISBN,  
+ b.title,  
+ a.name1.fname || ' ' || a.name1.lname AS author_name  
+FROM  
+ Book b  
+JOIN  
+ Author a  
+ON  
+ a.author_id IN (SELECT * FROM TABLE(b.author_id));   
+select * from Book; 
+
+
+
+
+
+2. SELECT DISTINCT 
+ c.customer_id,  
+ c.name1.fname || ' ' || c.name1.lname AS customer_name  FROM  
+ Customer c  
+JOIN  
+ Book_Sale bs ON c.customer_id = bs.customer_id  JOIN  
+ Book b ON bs.ISBN = b.ISBN  
+WHERE  
+ b.publisher.pub_name = 'abc'; 
+
+  
+3. SELECT  
+ c.name1.fname || ' ' || c.name1.lname AS customer_name,   b.title AS book_title,  
+ b.publisher.pub_name AS publisher_name  FROM  
+ Customer c  
+JOIN  
+ Book_Sale bs ON c.customer_id = bs.customer_id  JOIN  
+ Book b ON bs.ISBN = b.ISBN  
+WHERE  
+ b.publisher.branch IN ('LONDON')  
+ORDER BY  
+ c.name1.lname; 
+
+
+4. SELECT  
+ b.category AS category,  
+ COUNT(*) AS book_count  
+FROM  
+ Book b  
+GROUP BY  
+ b.category  
+ORDER BY  
+ b.category; 
+
+
+
+5 . SELECT  
+ a.name1.fname AS author_first_name,   COUNT(bs.ISBN) AS books_sold  FROM  
+ Book_Salebs  
+JOIN  
+ Book b ON bs.ISBN = b.ISBN  JOIN  
+ Author a ON a.author_id IN (   SELECT *  
+ FROM TABLE(b.author_id)   )  
+GROUP BY  
+ a.name1.fname  
+ORDER BY  
+ A.name1.fname;
+
+
+Q2)
+CREATE TYPE ExamType AS OBJECT ( 
+year NUMBER, 
+city VARCHAR2(50) 
+)not final ; 
+
+CREATE TYPE ChildType AS OBJECT ( 
+name VARCHAR2(50), 
+birthday DATE 
+)not final; 
+
+CREATE TYPE ExamSet AS VARRAY(10) OF EXAMTYPE; 
+
+CREATE TYPE SkillType1 AS OBJECT ( 
+type VARCHAR2(50), 
+exams ExamSet 
+)not final; 
+
+CREATE TYPE SkillSet AS VARRAY(10) OF SKILLTYPE1; 
+
+CREATE TYPE ChildrenSet AS VARRAY(10) OF ChildType; 
+
+CREATE TABLE EMP ( 
+ename VARCHAR(50), 
+children CHILDRENSET, 
+skills SKILLSET 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Ram Sharma',  
+
+CHILDRENSET(CHILDTYPE('Raman', TO_DATE('2001-05-15', 'YYYY-MM-DD')), CHILDTYPE('Nehal', 
+TO_DATE('1998-03-22', 'YYYY-MM-DD'))), 
+
+SKILLSET(SKILLTYPE1('typing', EXAMSET(EXAMTYPE(2023, 'Dayton'), EXAMTYPE(2021, 
+'Cleveland'))),  
+
+SKILLTYPE1('programming', EXAMSET(EXAMTYPE(2020, 'New York')))) 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Amit Verma',  
+
+CHILDRENSET(CHILDTYPE('Rohit', TO_DATE('1999-07-30', 'YYYY-MM-DD'))), 
+
+SKILLSET(SKILLTYPE1('accounting', EXAMSET(EXAMTYPE(2019, 'Columbus'))),  
+
+SKILLTYPE1('typing', EXAMSET(EXAMTYPE(2022, 'Dayton'))))); 
+
+INSERT INTO EMP VALUES ( 
+'Sunil Mehta',  
+CHILDRENSET(CHILDTYPE('Vikram', TO_DATE('2003-09-05', 'YYYY-MM-DD')), CHILDTYPE('Arjun', 
+TO_DATE('2005-11-13', 'YYYY-MM-DD'))), 
+SKILLSET(SKILLTYPE1('management', EXAMSET(EXAMTYPE(2018, 'Chicago'))),  
+SKILLTYPE1('programming', EXAMSET(EXAMTYPE(2021, 'Boston')))) 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Manoj Patel',  
+CHILDRENSET(CHILDTYPE('Ananya', TO_DATE('2000-12-25', 'YYYY-MM-DD'))), 
+SKILLSET(SKILLTYPE1('typing', EXAMSET(EXAMTYPE(2023, 'Dayton'))),  
+SKILLTYPE1('design', EXAMSET(EXAMTYPE(2020, 'San Francisco')))) 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Suman Desai',  
+CHILDRENSET(CHILDTYPE('Kabir', TO_DATE('2002-02-14', 'YYYY-MM-DD')), CHILDTYPE('Diya', 
+TO_DATE('1997-10-19', 'YYYY-MM-DD'))), 
+SKILLSET(SKILLTYPE1('data analysis', EXAMSET(EXAMTYPE(2022, 'Seattle'))),  
+SKILLTYPE1('typing', EXAMSET(EXAMTYPE(2020, 'Dayton')))) 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Rahul Nair',  
+CHILDRENSET(CHILDTYPE('Pooja', TO_DATE('2004-04-22', 'YYYY-MM-DD'))), 
+SKILLSET(SKILLTYPE1('programming', EXAMSET(EXAMTYPE(2019, 'Boston'))),  
+SKILLTYPE1('typing', EXAMSET(EXAMTYPE(2021, 'Dayton')))) 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Priya Iyer',  
+CHILDRENSET(CHILDTYPE('Dev', TO_DATE('2000-08-07', 'YYYY-MM-DD'))), 
+SKILLSET(SKILLTYPE1('programming', EXAMSET(EXAMTYPE(2023, 'Dayton'))),  
+SKILLTYPE1('management', EXAMSET(EXAMTYPE(2022, 'Chicago')))) 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Vikram Singh',  
+CHILDRENSET(CHILDTYPE('Karan', TO_DATE('1996-01-17', 'YYYY-MM-DD')), CHILDTYPE('Riya', 
+TO_DATE('2003-12-29', 'YYYY-MM-DD'))), 
+SKILLSET(SKILLTYPE1('data analysis', EXAMSET(EXAMTYPE(2021, 'Los Angeles'))),  
+SKILLTYPE1('typing', EXAMSET(EXAMTYPE(2022, 'Dayton')))) 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Neha Gupta',  
+CHILDRENSET(CHILDTYPE('Arav', TO_DATE('2001-03-03', 'YYYY-MM-DD'))), 
+SKILLSET(SKILLTYPE1('design', EXAMSET(EXAMTYPE(2020, 'New York'))),  
+SKILLTYPE1('typing', EXAMSET(EXAMTYPE(2021, 'Dayton')))) 
+); 
+
+INSERT INTO EMP VALUES ( 
+'Anil Reddy',  
+CHILDRENSET(CHILDTYPE('Sneha', TO_DATE('2005-06-12', 'YYYY-MM-DD'))), 
+SKILLSET(SKILLTYPE1('typing', EXAMSET(EXAMTYPE(2023, 'Dayton'))),  
+SKILLTYPE1('programming', EXAMSET(EXAMTYPE(2019, 'San Francisco')))) 
+); 
+
+
+SELECT * from EMP;
+
+
+
+
+
+
+
+1. SELECT ENAME 
+FROM EMP E 
+WHERE EXISTS ( 
+SELECT 1 
+FROM TABLE(E.CHILDREN) C 
+WHERE C.BIRTHDAY > TO_DATE('2000-01-01', 'YYYY-MM-DD') ); 
+
+
+
+
+2.SELECT ENAME 
+FROM EMP E 
+WHERE EXISTS ( 
+SELECT 1 
+FROM TABLE(E.SKILLS) S, TABLE(S.EXAMS) EX 
+WHERE S.TYPE = 'typing' 
+AND EX.CITY = 'Dayton' 
+);
+
+
+ 
+3.SELECT DISTINCT(S.TYPE) AS SKILLTYPES 
+FROM EMP E, TABLE(E.SKILLS) S;
+
+
+
+
+
+

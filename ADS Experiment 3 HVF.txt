@@ -1,0 +1,89 @@
+ADS Experiment 3 HVF
+
+CREATE TABLE emp1 (
+    eno INT PRIMARY KEY,
+    ename VARCHAR(50),
+    city VARCHAR(50),
+    salary DECIMAL(10, 2)
+);
+
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (1, 'Nikita', 'Delhi', 14000);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (2, 'Sameer', 'Mumbai', 19000);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (3, 'Tanvi', 'Bangalore', 11000);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (4, 'Vikram', 'Chennai', 23000);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (5, 'Sneha', 'Pune', 16000);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (6, 'Kartik', 'Hyderabad', 14500);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (7, 'Priya', 'Kolkata', 15500);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (8, 'Mohit', 'Jaipur', 27000);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (9, 'Sakshi', 'Lucknow', 9000);
+INSERT INTO emp1 (eno, ename, city, salary) VALUES (10, 'Riya', 'Ahmedabad', 18500);
+
+UPDATE emp1 
+SET salary = 15000 
+WHERE eno = 7;
+
+
+-- Horizontal Fragmentation
+CREATE TABLE hfrag4 AS
+SELECT * FROM emp1
+WHERE salary <= 15000;
+
+SELECT * FROM hfrag4;
+
+CREATE TABLE hfrag3 AS
+SELECT * FROM emp1
+WHERE salary > 15000;
+
+SELECT * FROM hfrag3;
+-- Vertical Fragmentation
+CREATE TABLE vfrag1 AS
+SELECT eno, ename FROM emp1;
+
+SELECT * FROM vfrag1;
+
+CREATE TABLE vfrag2 AS
+SELECT eno, city, salary FROM emp1;
+
+SELECT * FROM vfrag2;
+
+
+-- Q1 Find salary of all employees
+SELECT eno, salary FROM hfrag1
+UNION
+SELECT eno, salary FROM hfrag3;
+
+
+-- Q2 Find the name of all employees where salary = 15000
+SELECT vfrag1.ename
+FROM vfrag1
+JOIN hfrag4 ON vfrag1.eno = hfrag4.eno
+WHERE hfrag4.salary = 15000;
+
+
+-- Q3 Find the employee s name and city where employee salary is between 15000 to  25000
+SELECT vfrag1.ename, vfrag2.city
+FROM vfrag1
+JOIN vfrag2 ON vfrag1.eno = vfrag2.eno
+WHERE vfrag2.salary BETWEEN 15000 AND 25000;
+
+
+-- Q4 Find the employee s name and city where employee number is known
+SELECT vfrag1.ename, vfrag2.city
+FROM vfrag1
+JOIN vfrag2 ON vfrag1.eno = vfrag2.eno
+WHERE vfrag1.eno = 2;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

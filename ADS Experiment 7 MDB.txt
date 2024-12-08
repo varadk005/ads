@@ -1,0 +1,209 @@
+Experiment7
+
+ Problem Statement 1
+
+ 1. Create Database and Collection
+
+// Switch to or create the database
+use product;
+
+// Create collection: inventory
+db.createCollection("inventory");
+
+
+ 2. Perform CRUD Operations on `inventory`
+
+ a. Insert Documents
+**Insert One Document**
+
+db.inventory.insertOne({
+  item: "item1",
+  qty: 25,
+  status: "A"
+});
+
+
+**Insert Many Documents**
+
+db.inventory.insertMany([
+  { item: "item2", qty: 50, status: "D" },
+  { item: "item3", qty: 15, status: "A" },
+  { item: "item4", qty: 10, status: "D" },
+  { item: "item5", qty: 30, status: "A" }
+]);
+
+
+ b. Update Documents
+**Update One Document**
+
+db.inventory.updateOne(
+  { item: "item1" },
+  { $set: { qty: 35, status: "B" } }
+);
+
+
+**Update Many Documents**
+
+db.inventory.updateMany(
+  { status: "D" },
+  { $set: { status: "X" } }
+);
+
+
+ c. Replace Documents
+**Replace One Document**
+
+db.inventory.replaceOne(
+  { item: "item1" },
+  { item: "item1", qty: 50, status: "B" }
+);
+
+
+ d. Delete Documents
+**Delete One Document**
+
+db.inventory.deleteOne({ item: "item5" });
+
+
+**Delete Many Documents**
+
+db.inventory.deleteMany({ status: "X" });
+
+
+ e. Find Documents
+
+db.inventory.find();
+
+
+---
+
+ 3. Filter Queries on `inventory`
+ a. `SELECT * FROM inventory`
+
+db.inventory.find();
+
+
+ b. `SELECT * FROM inventory WHERE status = "D"`
+
+db.inventory.find({ status: "D" });
+
+
+ c. `SELECT * FROM inventory WHERE status IN ("A", "D")`
+
+db.inventory.find({ status: { $in: ["A", "D"] } });
+
+
+ d. `SELECT * FROM inventory WHERE status = "A" AND qty < 30`
+
+db.inventory.find({ status: "A", qty: { $lt: 30 } });
+
+
+ e. `SELECT * FROM inventory WHERE status = "A" OR qty < 30`
+
+db.inventory.find({ $or: [{ status: "A" }, { qty: { $lt: 30 } }] });
+
+
+ f. `SELECT * FROM inventory WHERE status = "A" AND (qty < 30 OR item LIKE "p%")`
+
+db.inventory.find({
+  status: "A",
+  $or: [{ qty: { $lt: 30 } }, { item: { $regex: "^p" } }]
+});
+
+
+---
+
+ Problem Statement 2
+
+ 1. Create `books` Collection and Insert Documents
+
+// Create collection: books
+db.createCollection("books");
+
+// Insert documents
+db.books.insertMany([
+  { title: "1984", author: "George Orwell", year: 1949, genre: "Dystopian" },
+  { title: "To Kill a Mockingbird", author: "Harper Lee", year: 1960, genre: "Fiction" },
+  { title: "The Great Gatsby", author: "F. Scott Fitzgerald", year: 1925, genre: "Fiction" },
+  { title: "Brave New World", author: "Aldous Huxley", year: 1932, genre: "Dystopian" },
+  { title: "Moby Dick", author: "Herman Melville", year: 1851, genre: "Fiction" }
+]);
+
+
+---
+
+ 2. Queries on `books`
+
+ 3. Find all books published after 1950
+
+db.books.find({ year: { $gt: 1950 } });
+
+
+ 4. Find all Dystopian books published before 1950
+
+db.books.find({ genre: "Dystopian", year: { $lt: 1950 } });
+
+
+ 5. Update the genre of "1984" to "Science Fiction"
+
+db.books.updateOne(
+  { title: "1984" },
+  { $set: { genre: "Science Fiction" } }
+);
+
+
+ 6. Delete all books in the "Fiction" genre
+
+db.books.deleteMany({ genre: "Fiction" });
+
+
+ 7. Calculate the total number of books for each genre
+
+db.books.aggregate([
+  { $group: { _id: "$genre", total_books: { $sum: 1 } } }
+]);
+
+
+ 8. Create an index on the `author` field
+
+db.books.createIndex({ author: 1 });
+
+
+ 9. Retrieve all books sorted by year in ascending order
+
+db.books.find().sort({ year: 1 });
+
+
+ 10. Count the number of books written by "Harper Lee"
+
+db.books.countDocuments({ author: "Harper Lee" });
+
+
+ 11. Retrieve only the titles and authors of all books
+
+db.books.find({}, { _id: 0, title: 1, author: 1 });
+
+
+---
+
+ 3. Filter Queries on `books`
+
+ a. Find books published between 1930 and 1960
+
+db.books.find({ year: { $gte: 1930, $lte: 1960 } });
+
+
+ b. Find books with titles containing the word "The"
+
+db.books.find({ title: { $regex: "The", $options: "i" } });
+
+
+ c. Find all books published before 1950 and in the Fiction genre
+
+db.books.find({ year: { $lt: 1950 }, genre: "Fiction" });
+
+
+ d. Find all books not written by Aldous Huxley
+
+db.books.find({ author: { $ne: "Aldous Huxley" } });
+

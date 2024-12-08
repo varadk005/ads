@@ -1,0 +1,99 @@
+ADS EXPIREMENT 4 TS
+
+
+--Q1
+a)      CREATE TABLESPACE emp_data DATAFILE 'C:\ads\exp4.dbf' size 20m;
+
+b) 	SELECT tablespace_name,status, bytes /1024 /1024 AS size_mb
+        FROM dba_data_files
+        WHERE tablespace_name='EMP_DATA';
+
+
+--Q2
+a)	ALTER DATABASE DATAFILE 'C:\ads\exp4.dbf' RESIZE 50M;
+
+b) 	SELECT tablespace_name,status, bytes /1024 /1024 AS size_mb
+        FROM dba_data_files
+        WHERE tablespace_name='EMP_DATA';
+--Q3
+a)	 CREATE TEMPORARY TABLESPACE temp_data TEMPFILE 'C:\ads\temp_exp4.dbf' SIZE 20M;
+        ALTER DATABASE  DEFAULT TEMPORARY TABLESPACE temp_data;
+
+b) 	SELECT tablespace_name,status, bytes /1024 /1024 AS size_mb
+        FROM dba_temp_files
+        WHERE tablespace_name='TEMP_DATA';
+
+
+
+--Q4
+a)	 CREATE UNDO TABLESPACE undo_data DATAFILE 'C:\ads\undo_exp4.dbf' size 20m;
+
+b)	 SELECT tablespace_name,status, bytes /1024 /1024 AS size_mb
+        	FROM dba_data_files
+        	WHERE tablespace_name='UNDO_DATA';
+
+
+--Q5
+a) 	ALTER session set"_ORACLE_SCRIPT"=TRUE;
+        CREATE USER HR_USER IDENTIFIED BY HR_USER 
+        DEFAULT TABLESPACE EMP_DATA 
+        QUOTA 10M ON EMP_DATA;
+    
+b) 	Grant CREATE SESSION, CREATE TABLE to HR_USER;
+    
+c)	 SELECT USERNAME, TABLESPACE_NAME, MAX_BYTES, BYTES AS USED_DATA
+        FROM DBA_TS_QUOTAS
+        WHERE USERNAME = 'HR_USER';
+
+
+--Q6)
+a)  CONNECT HR_USER/HR_USER;
+
+b)  CREATE TABLE employee (emp_id int , emp_name VARCHAR(20), 
+ 	emp_address VARCHAR(20)) TABLESPACE EMP_DATA;
+
+c)  INSERT INTO employee VALUES(1,'Ram','kolhapur');
+        INSERT INTO employee VALUES(2,'sham','kolhapur');
+        INSERT INTO employee VALUES(3,'Parth','kolhapur');
+        INSERT INTO employee VALUES(4,'kedar','sangli');
+        INSERT INTO employee VALUES(5,'Akash','satara');
+    
+d)  SELECT USERNAME, TABLESPACE_NAME, MAX_BYTES, BYTES AS USED_DATA
+        FROM DBA_TS_QUOTAS
+        WHERE USERNAME = 'HR_USER';
+            
+        
+SELECT TABLESPACE_Name, SUM (bytes)/1024 /1024 as free_space_mb 
+        from dba_free_space
+        where TABLESPACE_Name='EMP_DATA'
+        GROUP BY TABLESPACE_Name;
+
+--Q7
+    a)  TABLESPACE emp_data OFFLINE;
+        SELECT tablespace_name, status
+        FROM dba_tablespaces
+        WHERE tablespace_name = 'EMP_DATA';
+        
+    b)  TABLESPACE emp_data ONLINE;
+        SELECT tablespace_name, status
+        FROM dba_tablespaces
+        WHERE tablespace_name = 'EMP_DATA';
+        
+    
+c) 	-- Remove the quota for HR_USER
+        ALTER USER hr_user QUOTA 0 ON emp_data;
+        
+        -- Verify the quota removal
+        SELECT 
+            USERNAME, 
+            TABLESPACE_NAME, 
+            MAX_BYTES, 
+            BYTES AS USED_DATA
+        FROM 
+            DBA_TS_QUOTAS
+        WHERE 
+            USERNAME = 'HR_USER';
+
+
+
+

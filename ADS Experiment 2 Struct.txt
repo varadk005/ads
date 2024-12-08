@@ -1,0 +1,142 @@
+ADS Experiment 2
+
+
+CREATE OR REPLACE TYPE PersonType AS OBJECT (
+    person_id varchar(10),
+    fname VARCHAR2(50),  
+    lname VARCHAR2(50), 
+    dob DATE,           
+    MEMBER FUNCTION FullName RETURN VARCHAR2,
+    MEMBER FUNCTION OnDate RETURN DATE
+) not final
+
+CREATE OR REPLACE TYPE BODY PersonType AS 
+    MEMBER FUNCTION FullName RETURN VARCHAR2 IS
+    BEGIN
+        RETURN fname || ' ' || lname;  
+    END;
+
+    MEMBER FUNCTION OnDate RETURN DATE IS
+    BEGIN
+        RETURN dob; 
+    END;
+END;
+
+create type EmpObjType under PersonType (
+    job VARCHAR2(50),
+    salary NUMBER,
+    da NUMBER,
+    doj date,
+    
+    OVERRIDING MEMBER FUNCTION OnDate RETURN DATE,
+    MEMBER FUNCTION Earn RETURN NUMBER
+)
+
+CREATE OR REPLACE TYPE BODY EmpObjType AS
+    OVERRIDING MEMBER FUNCTION OnDate RETURN DATE IS
+    BEGIN
+        RETURN doj;
+    END;
+
+    MEMBER FUNCTION Earn RETURN NUMBER IS
+    BEGIN
+        RETURN salary + da;  
+    END;
+END;
+
+create table Employee of EmpObjType(
+    CONSTRAINT emp_id PRIMARY KEY(person_id)
+)
+
+INSERT INTO employee VALUES('1', 'Arya', 'Mane', DATE '2003-04-04', 'Developer', 20000, 5000, DATE '2025-05-05');
+INSERT INTO Employee VALUES ('2', 'Vrishali', 'Desai', DATE '1990-02-20', 'Engineer', 40000, 4000, DATE '2015-07-10');
+INSERT INTO Employee VALUES ('3', 'Dhairyasheel', 'Phalke', DATE '1988-03-10', 'Analyst', 35000, 3500, DATE '2012-09-20');
+INSERT INTO Employee VALUES ('4', 'Varad', 'Khedkar', DATE '1992-04-05', 'Developer', 42000, 4200, DATE '2018-01-15');
+INSERT INTO Employee VALUES ('5', 'Pranav', 'Mane', DATE '1983-05-22', 'Consultant', 48000, 4800, DATE '2011-11-01');
+INSERT INTO Employee VALUES ('6', 'Yashraj', 'Mane', DATE '1995-06-18', 'Tester', 37000, 3700, DATE '2019-08-25');
+INSERT INTO Employee VALUES ('7', 'Aum', 'Patil', DATE '1993-07-11', 'HR Specialist', 39000, 3900, DATE '2017-03-10');
+INSERT INTO Employee VALUES ('8', 'Devika', 'Mane', DATE '1986-08-30', 'Team Lead', 53000, 5300, DATE '2013-05-20');
+INSERT INTO Employee VALUES ('9', 'Ram', 'Patil', DATE '1991-09-15', 'Support Engineer', 41000, 4100, DATE '2016-10-05');
+INSERT INTO Employee VALUES ('10','Shym', 'Patil', DATE '1987-10-25', 'Project Manager', 55000, 5500, DATE '2009-04-15');
+
+
+
+select e.FullName() as Employee_Name, e.OnDate() as Join_Date, e.Earn() as Earning from Employee e;
+
+
+
+
+-- Q2
+CREATE OR REPLACE TYPE People AS OBJECT (
+    fname VARCHAR2(50),
+    lname VARCHAR2(50),
+    mname VARCHAR2(50),
+    birth_date DATE
+)NOT FINAL;  
+
+CREATE OR REPLACE TYPE Student UNDER People (
+    grade NUMBER,
+    class VARCHAR2(50),
+    parent_name VARCHAR2(100)
+);
+
+CREATE OR REPLACE TYPE Teacher UNDER People (
+    classes_taught VARCHAR2(100),
+    skills VARCHAR2(100),
+    employment_info VARCHAR2(100)
+);
+
+CREATE OR REPLACE TYPE Parent UNDER People (
+    children VARCHAR2(100)
+);
+
+CREATE TABLE students OF Student (
+    PRIMARY KEY (fname, lname)
+);
+
+CREATE TABLE teachers OF Teacher (
+    PRIMARY KEY (fname, lname)
+);
+
+CREATE TABLE parents OF Parent (
+    PRIMARY KEY (fname, lname)
+);
+
+INSERT INTO students VALUES ('Arya', 'Mane', 'D', DATE '2003-07-10', 9, 'Class A', 'Satish Mane');
+INSERT INTO students VALUES ('Aryan', 'Patil', 'S', DATE '2003-05-22', 8, 'Class B', 'Sachin Patil'); 
+INSERT INTO students VALUES ('Aditya', 'Patil', 'S', DATE '2003-11-15', 10, 'Class C', 'Suresh Patil');
+INSERT INTO students VALUES ('Reema', 'Desai', 'B', DATE '2003-01-05', 7, 'Class D', 'Babaso Desai');
+INSERT INTO students VALUES ('Ishwari', 'Deshmukh', 'R', DATE '2003-08-12', 11, 'Class E', 'Satish Deshmukh');
+INSERT INTO students VALUES ('Varad', 'Khedkar', 'S', DATE '2003-02-18', 12, 'Class F', 'Prafulla Khedkar');
+INSERT INTO students VALUES ('Yashraj', 'Mane', 'R', DATE '2003-09-25', 6, 'Class G', 'Satish Mane');
+
+INSERT INTO parents VALUES ('Satish', 'Mane', 'K', DATE '1975-04-10', 'Arya Mane');
+INSERT INTO parents VALUES ('Sachin', 'Patil', 'M', DATE '1972-07-23', 'Aryan Patil');
+INSERT INTO parents VALUES ('Suresh', 'Patil', 'S', DATE '1979-05-15', 'Aditya Patil');
+INSERT INTO parents VALUES ('Babaso', 'Desai', 'L', DATE '1980-09-17', 'Reema Desai');
+INSERT INTO parents VALUES ('Satish', 'Deshmukh', 'N', DATE '1982-11-02', 'Ishwari Deshmukh');
+INSERT INTO parents VALUES ('Prafulla', 'Khedkar', 'R', DATE '1976-03-22', 'Varad Khedkar');
+INSERT INTO parents VALUES ('Satish', 'Mane', 'P', DATE '1978-10-10', 'Yashraj Mane');
+
+INSERT INTO teachers VALUES ('Pooja', 'Reddy', 'T', DATE '1985-05-10', 'Math, Science', 'Math Expert', '10 Years');
+INSERT INTO teachers VALUES ('Sonal', 'Mishra', 'A', DATE '1980-04-20', 'English, History', 'Literature Specialist', '12 Years');
+INSERT INTO teachers VALUES ('Reema', 'Bose', 'D', DATE '1983-08-30', 'Physics, Chemistry', 'Science Expert', '8 Years');
+INSERT INTO teachers VALUES ('Meera', 'Iyer', 'F', DATE '1981-12-11', 'Computer Science', 'Tech Expert', '6 Years');
+INSERT INTO teachers VALUES ('Radhika', 'Desai', 'P', DATE '1978-03-09', 'Physical Education', 'Fitness Expert', '15 Years');
+INSERT INTO teachers VALUES ('Sangeeta', 'Kapoor', 'G', DATE '1986-06-19', 'Biology, Environmental Science', 'Biology Specialist', '9 Years');
+INSERT INTO teachers VALUES ('Shalini', 'Menon', 'L', DATE '1984-07-07', 'Geography, Economics', 'Social Studies Expert', '11 Years');
+
+
+
+SELECT * FROM students;
+
+SELECT * FROM teachers;
+
+
+
+
+SELECT * FROM parents;
+
+
+
+
