@@ -1,0 +1,128 @@
+﻿CREATE KEYSPACE employee WITH replication = ['class': 'SimpleStrategy', 'replication_factor': 1};
+
+
+ CREATE TABLE employee.emp_table (
+
+
+emp id int PRIMARY KEY,
+
+
+name text,
+
+
+city text,
+
+
+designation text,
+
+
+exp float
+
+
+);
+
+
+
+
+
+
+cqlsh> INSERT INTO employee.emp_table (emp_id, name, city, designation, exp) VALUES (3, 'Avdhut', 'Pune', 'MERN Developer', 4.0);
+
+
+
+
+UPDATE employee.emp_table SET city = 'Benglore', exp = 5.5 WHERE emp_id = 5;
+
+
+SELECT * FROM employee.emp_table;
+
+
+
+
+ALTER TABLE employee.emp_table ADD email set <TEXT>;
+
+
+cqlsh> ALTER TABLE employee.emp_table ADD exp LIST<TEXT>;
+
+
+
+
+
+
+cqlsh> ALTER TABLE employee.emp_table ADD expertise LIST<TEXT>;
+
+
+cqlsh> ALTER TABLE employee.emp_table ADD prev_nobs MAP<TEXT, INT>;
+
+
+cqlsh> SELECT * FROM employee.emp_table;
+
+
+
+
+UPDATE employee.emp table SET email = {'pushkaraj@nail.con'), expertise ['Java', 'Sprigboot', 'React Native'], prev_nobs = ('Java developer': 2) WHERE emp_id = 1;
+
+
+
+
+SELECT from employee.emp_table
+
+
+
+
+DELETE from employee.emp_table WHERE emp_id = 6;
+
+
+ SELECT * FROM employee.emp_table;
+
+
+
+
+
+
+
+
+Question 2—-----------------------
+
+
+
+
+cqlsh:employee> CREATE TABLE product (id uuid PRIMARY KEY, name text, price float, quant int);
+
+
+cqlsh:employee> INSERT INTO product (id, name, price, quant) VALUES (now(), 'Pen-Drive', 400.20, 12);
+
+
+cqlsh:employee> INSERT INTO product (id, name, price, quant) VALUES (now(), 'HDD', 1000.55, 13); 
+
+
+cqlsh:employee> INSERT INTO product (id, name, price, quant) VALUES (now(), 'SSD' 2000, 300);
+
+
+Eqlsh:employee> SELECT FROM product;
+
+
+
+
+
+
+cqlsh:employee> ALTER TABLE product ADD inv_date time
+
+
+
+
+cqlsh:employee> ALTER TABLE product ADD inv_date timestamp;
+
+
+cqlsh:employee> ALTER TABLE product ADD available boolean;
+
+
+
+
+cqlsh:employee> INSERT INTO product (id, nane, price, quant, inv date, available) VALUES (now(), 'Keyboard', 375.55, 189, tolinestamp(now()), true);
+
+
+cqlsh:employee> INSERT INTO product (id, name, price, quant, inv_date, available) VALUES (now(), 'Keyboard', 375.55, 100, toTimestamp(now()), true);
+
+
+colsh:employee> SELECT* FROM product:
